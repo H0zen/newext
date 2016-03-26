@@ -20,7 +20,7 @@ size_t MPQStream::read(void* dest, size_t bytes, size_t num)
             m_eof = true;
         }
 
-        memcpy(dest, (void*)&(m_buff[m_pos]), bytes);
+        memcpy(dest, m_buff + m_pos, bytes);
         m_pos = rpos;
     }
     return i;

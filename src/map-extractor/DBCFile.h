@@ -34,8 +34,8 @@
 class DBCFile : public MPQStream
 {
     public:
-        DBCFile(ArchiveSet&);
-        ~DBCFile();
+        explicit DBCFile(ArchiveSet&);
+        virtual ~DBCFile();
 
         bool open(const std::string& dbcFile);
 

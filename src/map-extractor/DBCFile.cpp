@@ -42,14 +42,14 @@ bool DBCFile::open(const std::string& dbcFile)
 
     do
     {
-        uint32 header;
-        if (read(&header, 1, 4) != 4) //header
+        uint32 header = 0;
+        if (read(&header, 4, 1) != 1) //header
         {
             printf("Could not read header in DBCFile %s.\n", dbcFile.c_str());
             continue;
         }
 
-        if (header != 'WDBC')
+        if (header != 'CBDW')
         {
             printf("The header in DBCFile %s did not match.\n", dbcFile.c_str());
             continue;
@@ -89,7 +89,7 @@ bool DBCFile::open(const std::string& dbcFile)
         data = new uint8[data_size];
         stringTable = data + recordSize * recordCount;
 
-        if (read(data, 1, data_size) != data_size)
+        if (read(data, data_size, 1) != 1)
         {
             delete [] data;
             data = NULL;
@@ -99,15 +99,20 @@ bool DBCFile::open(const std::string& dbcFile)
     while(0);
 
     if (data)
+    {
+        std::printf("Record Size %d\n",  recordSize);
+        std::printf("Record Count %d\n", recordCount);
+        std::printf("Field Count %d\n",  fieldCount);
+        std::printf("String Size %d\n",  stringSize);
         return true;
-
+    }
     return false;
 }
 
 DBCFile::Record DBCFile::getRecord(uint32 id)
 {
     assert(data);
-    return Record(*this, data + id * recordSize);
+    return Record(*this, (uint8*)(data + id * recordSize));
 }
 
 uint32 DBCFile::getMaxId()
