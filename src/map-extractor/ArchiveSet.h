@@ -15,10 +15,10 @@ class ArchiveSet
         explicit ArchiveSet(FileListFeeder& _feeder);
         ~ArchiveSet();
         bool   Init();
-//        uint8* ReadFile(const char* fileName, size_t& size);
-//        bool   ExtractFile(const char* archiveFile, const char* physicalFile);
+        uint8* ReadFile(char const* fileName, size_t& size);
+        //bool   ExtractFile(const char* archiveFile, const char* physicalFile);
     private:
         std::deque<HANDLE> m_mpqList;
-        FileListFeeder& m_feeder;
+        FileListFeeder     m_feeder;
 };
 #endif

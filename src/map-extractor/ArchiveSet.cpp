@@ -21,7 +21,7 @@ bool ArchiveSet::Init()
     HANDLE handle = NULL;
 
     std::printf("\n\n Loading data files\n");
-    std::printf("==================\n");
+    std::printf(" ==================\n");
 
     //open base files and patch them
     f_list = m_feeder.GetFileList(FLT_BASE);
@@ -72,7 +72,50 @@ bool ArchiveSet::Init()
         m_mpqList.push_back(handle);
     }
     std::printf("\n\n Done!\n");
-    std::printf("==================\n");
+    std::printf(" ==================\n");
 
     return true;
 }
+
+uint8* ArchiveSet::ReadFile(char const* fileName, size_t& size)
+{
+    HANDLE fh;
+    uint8* buff = NULL;
+
+    for (std::deque<HANDLE>::const_reverse_iterator it = m_mpqList.rbegin(); it != m_mpqList.rend(); ++it)
+    {
+        if (!SFileOpenFileEx(*it, fileName, SFILE_OPEN_PATCHED_FILE, &fh))
+            continue;
+        do
+        {
+            // check size
+            DWORD hiSize;
+            if (((size = SFileGetFileSize(fh, &hiSize)) == SFILE_INVALID_SIZE) || (!size))
+                continue;
+
+            // allocate buffer for reading
+            buff = new uint8[size];
+
+            // try read into buffer
+            DWORD readSize;
+            if (!SFileReadFile(fh, buff, size, &readSize, NULL))
+            {
+                delete [] buff;
+                buff = NULL;
+            }
+        }
+        while(0);
+
+        //close file handle
+        SFileCloseFile(fh);
+
+        if (buff) { break; }
+    }
+
+    // no file found
+    if (!buff)
+        printf(" Error: '%s' not found\n", fileName);
+
+    return buff;
+}
+

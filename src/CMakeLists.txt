@@ -24,6 +24,8 @@ set(EXECUTABLE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/Utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/FileListFeeder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/ArchiveSet.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/DBCFile.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/MPQStream.cpp
 )
 
 include_directories(
