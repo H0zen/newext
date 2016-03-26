@@ -23,6 +23,7 @@ set(EXECUTABLE_SOURCES
     main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/Utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/FileListFeeder.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/ArchiveSet.cpp
 )
 
 include_directories(

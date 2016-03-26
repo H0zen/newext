@@ -82,11 +82,13 @@ bool FileListFeeder::Init()
         {
             // base files
             m_list[FLT_BASE].push_back(dataPath + "common.MPQ");
-            m_list[FLT_BASE].push_back(dataPath + "common-2.MPQ");
             m_list[FLT_BASE].push_back(dataPath + "expansion.MPQ");
 
             if (m_core == CLIENT_WOTLK)
-              m_list[FLT_BASE].push_back(dataPath + "lichking.MPQ");
+            {
+                m_list[FLT_BASE].push_back(dataPath + "common-2.MPQ");
+                m_list[FLT_BASE].push_back(dataPath + "lichking.MPQ");
+            }
 
             tempLocDir = dataPath + "patch";
             scan_patches(tempLocDir, FLT_BASE);
