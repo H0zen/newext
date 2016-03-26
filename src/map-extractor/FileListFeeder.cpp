@@ -38,12 +38,34 @@ bool FileListFeeder::Init()
     std::string tempLocDir;
     std::string dataPath = std::string(m_path) + "Data/";
 
+    if (m_core != CLIENT_CLASSIC)
+    {
+        std::printf(" Detecting locale...");
+
+        int8 i = 0;
+        for (std::vector<std::string>::const_iterator it = m_listLocale.begin(); it != m_listLocale.end(); ++it, i++)
+        {
+            tempLocDir = dataPath + (*it) + "/locale-" + (*it) + ".MPQ";
+            if (FileExist(tempLocDir.c_str()))
+            {
+                printf("%s\n", it->c_str());
+                m_curLocale = i;
+                break;
+            }
+        }
+        if (m_curLocale < 0)
+        {
+            printf(" Couldn't find any locale\n");
+            return false;
+        }
+    }
+    else
+      { m_curLocale = 0; }
+
     switch (m_core)
     {
         case CLIENT_CLASSIC:
         {
-            m_curLocale = 0;
-
             // base files
             m_list[FLT_BASE].push_back(dataPath + "wmo.MPQ");
             m_list[FLT_BASE].push_back(dataPath + "terrain.MPQ");
@@ -54,29 +76,10 @@ bool FileListFeeder::Init()
             scan_patches(dataPath, FLT_BASE);
         }
         break;
+
         case CLIENT_TBC:
         case CLIENT_WOTLK:
         {
-            std::printf(" Detecting locale...");
-            
-            int8 i = 0;
-            for (std::vector<std::string>::const_iterator it = m_listLocale.begin(); it != m_listLocale.end(); ++it, i++)
-            {
-                tempLocDir = dataPath + (*it) + "/locale-" + (*it) + ".MPQ";
-                if (FileExist(tempLocDir.c_str()))
-                {
-                    printf("%s\n", it->c_str());
-                    m_curLocale = i;
-                    break;
-                }
-            }
-            if (m_curLocale < 0)
-            {
-                result = false;
-                printf(" Couldn't find any locale\n");
-                break;
-            }
-
             // base files
             m_list[FLT_BASE].push_back(dataPath + "common.MPQ");
             m_list[FLT_BASE].push_back(dataPath + "common-2.MPQ");
@@ -87,7 +90,7 @@ bool FileListFeeder::Init()
 
             tempLocDir = dataPath + "patch";
             scan_patches(tempLocDir, FLT_BASE);
-            
+
             // locale files
             tempLocDir = dataPath + m_listLocale[m_curLocale] + "/";
             m_list[FLT_LOCALE].push_back(tempLocDir + "locale-" + m_listLocale[m_curLocale] + ".MPQ");
@@ -96,13 +99,38 @@ bool FileListFeeder::Init()
             scan_patches(tempLocDir, FLT_LOCALE);
         }
         break;
+
         case CLIENT_CATA:
         {
-            
+            //TODO implement an algorithms here. for now we'll add by hand, for 4.4.3 (build 15595)
+
+            // base files
+            m_list[FLT_BASE].push_back(dataPath + "art.MPQ");
+            m_list[FLT_BASE].push_back(dataPath + "expansion1.MPQ");
+            m_list[FLT_BASE].push_back(dataPath + "expansion2.MPQ");
+            m_list[FLT_BASE].push_back(dataPath + "expansion3.MPQ");
+            m_list[FLT_BASE].push_back(dataPath + "world.MPQ");
+            m_list[FLT_BASE].push_back(dataPath + "world2.MPQ");
+
+            // base patches
+            m_list[FLT_BASE_PATCH].push_back(dataPath + "wow-update-base-15211.MPQ");
+            m_list[FLT_BASE_PATCH].push_back(dataPath + "wow-update-base-15354.MPQ");
+            m_list[FLT_BASE_PATCH].push_back(dataPath + "wow-update-base-15595.MPQ");
+
+            // locale files
+            tempLocDir = dataPath + m_listLocale[m_curLocale] + "/";
+            m_list[FLT_LOCALE].push_back(tempLocDir + "locale-" + m_listLocale[m_curLocale] + ".MPQ");
+
+            // locale patches
+            tempLocDir = dataPath + m_listLocale[m_curLocale] + "/";
+            m_list[FLT_LOCALE].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15211.MPQ");
+            m_list[FLT_LOCALE].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15354.MPQ");
+            m_list[FLT_LOCALE].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15595.MPQ");
         }
         break;
+
         default:
-        break;
+            break;
     }
     if (result)
     {
