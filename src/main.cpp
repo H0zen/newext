@@ -8,6 +8,8 @@ int main(int argc, char** argv)
   uint32 build;
   int8 core;
   char const path[] = "./";
+  FileListFeeder f;
+  ArchiveSet archive;
 
   if (!GetCoreAndBuildNumber(build,core))
   {
@@ -15,15 +17,13 @@ int main(int argc, char** argv)
       return 0;
   }
 
-  FileListFeeder f(path, build, core);
-  if (!f.Init())
+  if (!f.Init(path, build, core))
   {
       std::printf("Could not get filelist for processing");
       return 0;
   }
 
-  ArchiveSet archive(f);
-  if (!archive.Init())
+  if (!archive.Init(f))
   {
       std::printf("Could not load filelists for processing");
       return 0;
