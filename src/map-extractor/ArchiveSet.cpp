@@ -20,6 +20,9 @@ bool ArchiveSet::Init()
 
     HANDLE handle = NULL;
 
+    std::printf("\n\n Loading data files\n");
+    std::printf("==================\n");
+
     //open base files and patch them
     f_list = m_feeder.GetFileList(FLT_BASE);
     f_patch = m_feeder.GetFileList(FLT_BASE_PATCH);
@@ -28,12 +31,12 @@ bool ArchiveSet::Init()
     {
         if (!SFileOpenArchive(it->c_str(), 0, MPQ_OPEN_READ_ONLY, &handle))
         {
-            std::printf("Cannot open %s. Exiting\n", it->c_str());
+            std::printf(" Cannot open %s. Exiting\n", it->c_str());
             return false;
         }
         for (FileList::const_iterator ip = f_patch.begin(); ip != f_patch.end(); ++ip)
         {
-            std::printf("Apply patch %s to %s...", ip->c_str(), it->c_str());
+            std::printf(" Apply patch %s to %s...", ip->c_str(), it->c_str());
             if (!SFileOpenPatchArchive(handle, ip->c_str(), "base", 0))
             {
                 std::printf("failed! Will exit.\n");
@@ -52,13 +55,13 @@ bool ArchiveSet::Init()
     {
         if (!SFileOpenArchive(it->c_str(), 0, MPQ_OPEN_READ_ONLY, &handle))
         {
-            std::printf("Cannot open %s. Exiting\n", it->c_str());
+            std::printf(" Cannot open %s. Exiting\n", it->c_str());
             return false;
         }
 
         for (FileList::const_iterator ip = f_patch.begin(); ip != f_patch.end(); ++ip)
         {
-            std::printf("Apply patch %s to %s...", ip->c_str(), it->c_str());
+            std::printf(" Apply patch %s to %s: ", ip->c_str(), it->c_str());
             if (!SFileOpenPatchArchive(handle, ip->c_str(), NULL, 0))
             {
                 std::printf("failed! Will exit.\n");
@@ -68,5 +71,8 @@ bool ArchiveSet::Init()
         }
         m_mpqList.push_back(handle);
     }
+    std::printf("\n\n Done!\n");
+    std::printf("==================\n");
+
     return true;
 }

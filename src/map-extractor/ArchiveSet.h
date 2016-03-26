@@ -3,9 +3,9 @@
 #ifndef __ARCHIVE_SET_H__
 #define __ARCHIVE_SET_H__
 
-#include "StormLib.h"
 #include "TypeDefines.h"
 #include "FileListFeeder.h"
+#include "StormLib.h"
 #include <vector>
 #include <deque>
 
