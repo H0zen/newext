@@ -29,6 +29,9 @@ int main(int argc, char** argv)
       return 0;
   }
 
+  std::printf("\n\n\n Testing Map.dbc\n");
+  std::printf("\n=========================\n");
+
   DBCFile dbc(archive);
 
   if (!dbc.open("DBFilesClient\\Map.dbc"))
@@ -38,7 +41,9 @@ int main(int argc, char** argv)
   }
 
   uint32 nrec = dbc.getRecordCount();
-  std::printf ("Map.dbc contains %u records:\n", nrec);
+  std::printf("\n=========================\n");
+  std::printf("\n\n Records in Map.dbc:\n");
+  std::printf("\n=========================\n");
 
   for (uint32 i = 0; i < nrec; i++)
   {
