@@ -32,7 +32,7 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/StormLib/src
     ${CMAKE_SOURCE_DIR}/dep/acelite
     ${CMAKE_SOURCE_DIR}/dep/g3dlib
-    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor
+    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/include
 )
 
 add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_SOURCES})

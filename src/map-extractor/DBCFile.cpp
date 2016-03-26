@@ -23,17 +23,12 @@
  */
 
 #include "DBCFile.h"
-#undef min
-#undef max
 
-DBCFile::DBCFile(ArchiveSet& _as): MPQStream(_as), recordSize(0), recordCount(0), fieldCount(0), stringSize(0), stringTable(NULL), data(NULL)
+DBCFile::DBCFile(ArchiveSet& _as): MPQStream(_as), recordSize(0), recordCount(0), fieldCount(0), stringSize(0), stringTable(NULL), recordData(NULL)
 {}
 
 DBCFile::~DBCFile()
-{
-  if (data)
-      delete [] data;
-}
+{}
 
 bool DBCFile::open(const std::string& dbcFile)
 {
@@ -84,41 +79,24 @@ bool DBCFile::open(const std::string& dbcFile)
             printf("Field count and record size in DBCFile %s do not match.\n", dbcFile.c_str());
             continue;
         }
-
-        size_t data_size = recordSize * recordCount + stringSize;
-        data = new uint8[data_size];
-        stringTable = data + recordSize * recordCount;
-
-        if (read(data, data_size, 1) != 1)
-        {
-            delete [] data;
-            data = NULL;
-            printf("DBCFile %s did not contain expected amount of data for records.\n", dbcFile.c_str());
-        }
+        recordData = _getBuffer(true);
+        stringTable = recordData + recordSize * recordCount;
     }
     while(0);
 
-    if (data)
-    {
-        std::printf("Record Size %d\n",  recordSize);
-        std::printf("Record Count %d\n", recordCount);
-        std::printf("Field Count %d\n",  fieldCount);
-        std::printf("String Size %d\n",  stringSize);
+    if (recordData)
         return true;
-    }
+
     return false;
 }
 
 DBCFile::Record DBCFile::getRecord(uint32 id)
 {
-    assert(data);
-    return Record(*this, (uint8*)(data + id * recordSize));
+    return Record(*this, recordData + id * recordSize);
 }
 
 uint32 DBCFile::getMaxId()
 {
-    assert(data);
-
     uint32 maxId = 0;
     for (uint32 i = 0; i < getRecordCount(); ++i)
     {

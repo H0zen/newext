@@ -27,7 +27,6 @@
 
 #include "MPQStream.h"
 
-#include <cassert>
 #include <cstdio>
 #include <string>
 
@@ -51,39 +50,33 @@ class DBCFile : public MPQStream
 
                 float getFloat(uint32 field) const
                 {
-                    assert(field < file.fieldCount);
-                    return *reinterpret_cast<float*>(offset + (field * 4));
+                    return *(float*)(offset + (field * 4));
                 }
 
                 uint32 getUInt32(uint32 field) const
                 {
-                    assert(field < file.fieldCount);
-                    return *reinterpret_cast<uint32*>(offset + (field * 4));
+                    return *(uint32*)(offset + (field * 4));
                 }
 
                 int32 getInt32(uint32 field) const
                 {
-                    assert(field < file.fieldCount);
-                    return *reinterpret_cast<int32*>(offset + (field * 4));
+                    return *(int32*)(offset + (field * 4));
                 }
 
                 uint8 getByte(uint32 ofs) const
                 {
-                    assert(ofs < file.recordSize);
                     return *(offset + ofs);
                 }
 
                 const char* getString(uint32 field) const
                 {
-                    assert(field < file.fieldCount);
-                    uint32 stringOffset = static_cast<uint32>(getUInt32(field));
-                    assert(stringOffset < file.stringSize);
-                    return reinterpret_cast<const char*>(file.stringTable + stringOffset);
+                    uint32 stringOffset = getUInt32(field);
+                    return (const char*)(file.stringTable + stringOffset);
                 }
             private:
-                Record(DBCFile& file, uint8* offset): file(file), offset(offset) {}
-                DBCFile& file; /**< TODO */
-                uint8* offset; /**< TODO */
+                Record(DBCFile& file, uint8 const* offset): file(file), offset(offset) {}
+                DBCFile& file;
+                uint8 const* offset;
 
                 friend class DBCFile;
         };
@@ -93,12 +86,12 @@ class DBCFile : public MPQStream
         uint32 getFieldCount() const { return fieldCount; }
         uint32 getMaxId();
     private:
-        uint32      recordSize;
-        uint32      recordCount;
-        uint32      fieldCount;
-        uint32      stringSize;
-        uint8*      stringTable;
-        uint8*      data;
+        uint32       recordSize;
+        uint32       recordCount;
+        uint32       fieldCount;
+        uint32       stringSize;
+        uint8 const  *stringTable;
+        uint8 const  *recordData;
 };
 
 #endif
