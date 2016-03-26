@@ -17,7 +17,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-set(EXECUTABLE_NAME unittest)
+set(EXECUTABLE_NAME ut-00)
 
 set(EXECUTABLE_SOURCES
     main.cpp
@@ -31,14 +31,6 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/dep/g3dlib
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor
 )
-
-#add_library(mpqutil
-#    ${CMAKE_CURRENT_SOURCE_DIR}/mpqutil/MPQArchives.cpp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/mpqutil/MPQFile.cpp
-#    ${CMAKE_CURRENT_SOURCE_DIR}/mpqutil/DBCFile.cpp
-#)
-
-#target_link_libraries(mpqutil StormLib zlib)
 
 add_executable(${EXECUTABLE_NAME} ${EXECUTABLE_SOURCES})
 

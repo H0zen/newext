@@ -21,22 +21,6 @@ if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/bin/" CACHE PATH "MaNGOS default install prefix" FORCE)
 endif(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
 
-#Set config install path correctly from given path
-string(FIND "${CONF_DIR}" ":" CONF_DIR_ABSOLUTE)
-if(${CONF_DIR_ABSOLUTE} EQUAL -1)
-    #Path was not absolute
-    set(CONF_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/${CONF_DIR}")
-    if(MSVC)
-        set(CONF_COPY_DIR "${CMAKE_BINARY_DIR}/bin/$(ConfigurationName)/${CONF_DIR}")
-    endif()
-else()
-    #Path was absolute
-    set(CONF_INSTALL_DIR "${CONF_DIR}")
-    if(MSVC)
-        set(CONF_COPY_DIR "${CONF_DIR}")
-    endif()
-endif()
-
 if(WIN32)
     set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
     set(BIN_DIR ${CMAKE_INSTALL_PREFIX}/)
@@ -96,17 +80,6 @@ elseif(UNIX)
     # Run out of build tree
     set(CMAKE_BUILD_WITH_INSTALL_RPATH OFF)
     
-    # Add uninstall script and target
-    configure_file(
-        "${CMAKE_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
-        "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake"
-        IMMEDIATE @ONLY
-    )
-
-    add_custom_target(uninstall
-        "${CMAKE_COMMAND}" -P "${CMAKE_BINARY_DIR}/cmake_uninstall.cmake"
-    )
-    
     if(CMAKE_C_COMPILER MATCHES "gcc" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
         set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu99")
 
@@ -115,7 +88,7 @@ elseif(UNIX)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${SSE_FLAGS}")
             set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${SSE_FLAGS}")
         endif()
-        add_definitions(-DHAVE_SSE2 -D__SSE2__)
+        add_definitions(-DHAVE_SSE2)
         
         if(NOT DEBUG)
             set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} --no-warnings")
