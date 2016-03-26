@@ -123,9 +123,9 @@ bool FileListFeeder::Init()
 
             // locale patches
             tempLocDir = dataPath + m_listLocale[m_curLocale] + "/";
-            m_list[FLT_LOCALE].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15211.MPQ");
-            m_list[FLT_LOCALE].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15354.MPQ");
-            m_list[FLT_LOCALE].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15595.MPQ");
+            m_list[FLT_LOCALE_PATCH].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15211.MPQ");
+            m_list[FLT_LOCALE_PATCH].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15354.MPQ");
+            m_list[FLT_LOCALE_PATCH].push_back(tempLocDir + "wow-update-" + m_listLocale[m_curLocale] + "-15595.MPQ");
         }
         break;
 
