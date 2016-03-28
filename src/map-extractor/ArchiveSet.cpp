@@ -108,7 +108,7 @@ uint8* ArchiveSet::ReadFile(char const* fileName, size_t& size)
 
     for (std::deque<HANDLE>::const_reverse_iterator it = m_mpqList.rbegin(); it != m_mpqList.rend(); ++it)
     {
-        if (!SFileOpenFileEx(*it, fileName, 0, &fh))
+        if (!SFileOpenFileEx(*it, fileName, SFILE_OPEN_PATCHED_FILE, &fh))
             continue;
         do
         {
