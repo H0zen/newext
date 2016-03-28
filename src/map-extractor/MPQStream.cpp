@@ -59,13 +59,17 @@ void MPQStream::seek(size_t offset, StreamPos pos)
     m_eof = (m_pos >= m_size);
 }
 
-bool MPQStream::_open(char const* fileName)
+bool MPQStream::open(char const* fileName)
 {
+    if (m_buff) delete [] m_buff;
+    m_buff = NULL;
+    m_eof = false;
+    m_pos = m_size = 0;
     m_buff = m_as->ReadFile(fileName, m_size);
     return (m_buff != NULL);
 }
 
-uint8 const* MPQStream::_getBuffer(bool at = false) const
+uint8 const* MPQStream::getBuffer(bool at = false) const
 {
     if (at)
     {

@@ -24,21 +24,45 @@
 
 #include "DBCFile.h"
 
-DBCFile::DBCFile(ArchiveSet& _as): MPQStream(_as), recordSize(0), recordCount(0), fieldCount(0), stringSize(0), stringTable(NULL), recordData(NULL)
-{}
+DBCFile::DBCFile(ArchiveSet& _as): m_stream(NULL), recordSize(0), recordCount(0), fieldCount(0), stringSize(0), stringTable(NULL), recordData(NULL)
+{
+    m_stream = new MPQStream(_as);
+    m_name.clear();
+}
 
 DBCFile::~DBCFile()
-{}
+{
+  if (m_stream)
+      delete m_stream;
+  m_stream = NULL;
+}
+
+void DBCFile::reset()
+{
+    // reset state for reuse case
+    recordSize = 0;
+    recordCount = 0;
+    fieldCount = 0;
+    stringSize = 0;
+    stringTable = NULL;
+    recordData = NULL;
+    m_name.clear();
+}
 
 bool DBCFile::open(const std::string& dbcFile)
 {
-    if (!_open(dbcFile.c_str()))
+    reset();
+    
+    if (!m_stream)
+        return false;
+
+    if (!m_stream->open(dbcFile.c_str()))
         return false;
 
     do
     {
         uint32 header = 0;
-        if (read(&header, 4, 1) != 1) //header
+        if (m_stream->read(&header, 4, 1) != 1) //header
         {
             printf("Could not read header in DBCFile %s.\n", dbcFile.c_str());
             continue;
@@ -50,44 +74,65 @@ bool DBCFile::open(const std::string& dbcFile)
             continue;
         }
 
-        if (read(&recordCount, 4, 1) != 1) // Number of records
+        if (m_stream->read(&recordCount, 4, 1) != 1) // Number of records
         {
             printf("Could not read number of records from DBCFile %s.\n", dbcFile.c_str());
             continue;
         }
 
-        if (read(&fieldCount, 4, 1) != 1)  // Number of fields
+        if (m_stream->read(&fieldCount, 4, 1) != 1)  // Number of fields
         {
             printf("Could not read number of fields from DBCFile %s.\n", dbcFile.c_str());
             continue;
         }
 
-        if (read(&recordSize, 4, 1) != 1)  // Size of a record
+        if (m_stream->read(&recordSize, 4, 1) != 1)  // Size of a record
         {
             printf("Could not read record size from DBCFile %s.\n", dbcFile.c_str());
             continue;
         }
 
-        if (read(&stringSize, 4, 1) != 1)  // String size
+        if (m_stream->read(&stringSize, 4, 1) != 1)  // String size
         {
             printf("Could not read string block size from DBCFile %s.\n", dbcFile.c_str());
             continue;
         }
 
-        if ((fieldCount * 4) != recordSize)
+        if ((recordSize*recordCount + stringSize + 20) != m_stream->getSize())
         {
-            printf("Field count and record size in DBCFile %s do not match.\n", dbcFile.c_str());
+            printf("Read error in DBCFile %s.\n", dbcFile.c_str());
             continue;
         }
-        recordData = _getBuffer(true);
+        recordData = m_stream->getBuffer(true);
         stringTable = recordData + recordSize * recordCount;
     }
     while(0);
 
     if (recordData)
-        return true;
+    {
+        std::size_t pos = dbcFile.find_last_of("\\");
 
+        m_name = dbcFile.substr(pos + 1);
+
+        return true;
+    }
     return false;
+}
+
+bool DBCFile::write(const std::string& path)
+{
+    std::FILE* file = NULL;
+    std::string fullName = path + "/"+ m_name;
+    bool ok = true;
+
+    file = std::fopen((fullName).c_str(), "wb");
+    if (!file)
+        return false;
+
+    if (std::fwrite(m_stream->getBuffer(false), 1, m_stream->getSize(), file) != m_stream->getSize())
+        ok = false;
+    std::fclose(file);
+    return ok;
 }
 
 DBCFile::Record DBCFile::getRecord(uint32 id)

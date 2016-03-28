@@ -2,7 +2,7 @@
  * MaNGOS is a full featured server for World of Warcraft, supporting
  * the following clients: 1.12.x, 2.4.3, 3.3.5a, 4.3.4a and 5.4.8
  *
- * Copyright (C) 2005-2016  MaNGOS project <http://getmangos.eu>
+ * Copyright (C) 2005-2016  MaNGOS project <https://getmangos.eu>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,29 +22,15 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#ifndef __WDT_FILE_H__
-#define __WDT_FILE_H__
+#include "Extractor.h"
 
-#include "ChunkParser.h"
-#include <vector>
 
-class WDTFile
+int main(int argc, char** argv)
 {
-    public:
-        WDTFile(ArchiveSet&);
-        ~WDTFile() { if (m_stream) delete m_stream; }
-        bool open(char const*);
-        void GetADTFileList();
-        void GetADTFileList(std::vector<std::string>&);
-        bool HasADT() const { return m_hasADT;}
-    private:
-        void reset();
-    private:
-        MPQStream* m_stream;
-        ChunkParser m_chunkReader;
-        bool m_maps[64][64];
-        bool m_hasADT;
-        std::string filePrefix;
-};
+    Extractor e;
 
-#endif
+    if (e.Init(argc, argv)) e.Run(); //complex, isn't it? :)
+
+    return 0;
+}
+

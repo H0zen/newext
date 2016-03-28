@@ -60,7 +60,7 @@ bool FileListFeeder::Init(char const *m_path, uint32 m_build, int8 m_core)
 {
     bool result = true;
     std::string tempLocDir;
-    std::string dataPath = std::string(m_path) + "Data/";
+    std::string dataPath = std::string(m_path) + "/Data/";
 
     if (m_core != CLIENT_CLASSIC)
     {

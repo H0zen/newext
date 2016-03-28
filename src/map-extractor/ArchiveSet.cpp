@@ -24,6 +24,7 @@
 
 #include "ArchiveSet.h"
 
+
 ArchiveSet::ArchiveSet() : m_mpqList()
 {
 }
@@ -107,7 +108,7 @@ uint8* ArchiveSet::ReadFile(char const* fileName, size_t& size)
 
     for (std::deque<HANDLE>::const_reverse_iterator it = m_mpqList.rbegin(); it != m_mpqList.rend(); ++it)
     {
-        if (!SFileOpenFileEx(*it, fileName, SFILE_OPEN_PATCHED_FILE, &fh))
+        if (!SFileOpenFileEx(*it, fileName, 0, &fh))
             continue;
         do
         {
@@ -142,3 +143,26 @@ uint8* ArchiveSet::ReadFile(char const* fileName, size_t& size)
     return buff;
 }
 
+bool ArchiveSet::GetFileList(char const* pattern, std::set<std::string>& list)
+{
+    HANDLE hSearch = NULL;
+    SFILE_FIND_DATA sfd;
+    bool ok = false;
+
+    for (std::deque<HANDLE>::const_reverse_iterator hmpq = m_mpqList.rbegin(); hmpq != m_mpqList.rend(); ++hmpq)
+    {
+        hSearch = SListFileFindFirstFile(*hmpq, NULL, pattern, &sfd);
+        if (hSearch == NULL)
+        {
+            continue;
+        }
+        list.insert(sfd.cFileName);
+        ok = true;
+        while (SListFileFindNextFile(hSearch, &sfd))
+        {
+            list.insert(sfd.cFileName);
+        }
+        SListFileFindClose(hSearch);
+    }
+return ok;
+}

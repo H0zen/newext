@@ -17,16 +17,25 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-set(EXECUTABLE_NAME ut-00)
+set(EXECUTABLE_NAME map-extractor)
 
 set(EXECUTABLE_SOURCES
-    main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/Main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/Extractor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/Utils.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/FileListFeeder.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/ArchiveSet.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/DBCFile.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/MPQStream.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/ChunkParser.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor/WDTFile.cpp
 )
+
+if(WIN32)
+    # add resource file to windows build
+    set(EXECUTABLE_SRCS ${EXECUTABLE_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor.rc)
+endif()
+
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/dep/StormLib/src

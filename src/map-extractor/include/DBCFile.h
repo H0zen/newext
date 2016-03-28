@@ -30,13 +30,14 @@
 #include <cstdio>
 #include <string>
 
-class DBCFile : public MPQStream
+class DBCFile
 {
     public:
         explicit DBCFile(ArchiveSet&);
         virtual ~DBCFile();
 
         bool open(const std::string& dbcFile);
+        bool write(const std::string& path);
 
         class Record
         {
@@ -86,12 +87,16 @@ class DBCFile : public MPQStream
         uint32 getFieldCount() const { return fieldCount; }
         uint32 getMaxId();
     private:
+        void reset();
+    private:
+        MPQStream*   m_stream;
         uint32       recordSize;
         uint32       recordCount;
         uint32       fieldCount;
         uint32       stringSize;
         uint8 const  *stringTable;
         uint8 const  *recordData;
+        std::string  m_name;
 };
 
 #endif

@@ -21,30 +21,31 @@
  * World of Warcraft, and all World of Warcraft or Warcraft art, images,
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
+#ifndef __EXTRACTOR_H__
+#define __EXTRACTOR_H__
 
-#ifndef __WDT_FILE_H__
-#define __WDT_FILE_H__
+#include "ArchiveSet.h"
 
-#include "ChunkParser.h"
-#include <vector>
-
-class WDTFile
+class Extractor
 {
     public:
-        WDTFile(ArchiveSet&);
-        ~WDTFile() { if (m_stream) delete m_stream; }
-        bool open(char const*);
-        void GetADTFileList();
-        void GetADTFileList(std::vector<std::string>&);
-        bool HasADT() const { return m_hasADT;}
+        Extractor();
+        ~Extractor();
+        void Run();
+        bool Init(int, char**);
+
     private:
-        void reset();
+        void Usage(char* prg);
+        void ExtractDBC();
+        //void ExtractMAPS();
+        //void ExtractVMAPS();
     private:
-        MPQStream* m_stream;
-        ChunkParser m_chunkReader;
-        bool m_maps[64][64];
-        bool m_hasADT;
-        std::string filePrefix;
+        ArchiveSet* m_as;
+        int8        m_core;
+        uint32      m_build;
+        int         m_type;
+        std::string inPath;
+        std::string outPath;
 };
 
 #endif

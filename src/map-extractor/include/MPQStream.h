@@ -41,10 +41,11 @@ class MPQStream
 
         void    seek(size_t offset, StreamPos type);
         size_t  read(void* dest, size_t size, size_t num);
-        
-    protected:
-        bool _open(char const* fileName);
-        uint8 const* _getBuffer(bool at) const;
+
+        bool open(char const* fileName);
+        bool eof() const { return m_eof; }
+        uint8 const* getBuffer(bool at) const;
+        size_t getSize() const { return m_size; }
     private:
         ArchiveSet  *m_as;
         uint8*      m_buff;

@@ -31,14 +31,14 @@
 *  This function searches for and opens the WoW exe file in the current directory, using all known variations on its spelling
 *  @RETURN pFile the pointer to the file, so that it can be worked on
 */
-FILE* _openWoWExe()
+FILE* _openWoWExe(std::string path)
 {
     FILE* pFile = NULL;
     std::vector<std::string> exelist;
 
-    exelist.push_back("WoW.exe");
-    exelist.push_back("Wow.exe");
-    exelist.push_back("wow.exe");
+    exelist.push_back(path + "/WoW.exe");
+    exelist.push_back(path + "/Wow.exe");
+    exelist.push_back(path + "/wow.exe");
 
     /// loop through all possible file names
     for (std::vector<std::string>::const_iterator it = exelist.begin(); it != exelist.end(); ++it)
@@ -55,7 +55,7 @@ FILE* _openWoWExe()
 *  @PARAM sFilename is the filename of the WoW executable to be loaded
 *  @RETURN iBuild the build number of the WoW executable, or 0 if failed
 */
-int _getBuildNumber()
+int _getBuildNumber(std::string path)
 {
     int iBuild = -1; ///< build version # of the WoW executable (returned value)
     bool bBuildFound = false;
@@ -70,7 +70,7 @@ int _getBuildNumber()
                                         ///< searched for and the Base #, so that we can then get at the Base #
     unsigned char buildNumber[6]; ///< stored here prior to conversion to an integer
 
-    pFile = _openWoWExe();
+    pFile = _openWoWExe(path);
     if (!pFile)
         return 0; ///> failed to locate exe file
 
@@ -192,14 +192,14 @@ int _getCoreNumberFromBuild(int iBuildNumber)
 *  @PARAM sTitle is the Title text (directly under the MaNGOS logo)
 *  @PARAM iCoreNumber is the Core Number
 */
-void ShowBanner(const std::string& sTitle, int iCoreNumber)
+void ShowBanner(char const* sTitle, int iCoreNumber)
 {
     printf(
         "        __  __      _  _  ___  ___  ___      \n"
         "       |  \\/  |__ _| \\| |/ __|/ _ \\/ __|  \n"
         "       | |\\/| / _` | .` | (_ | (_) \\__ \\  \n"
         "       |_|  |_\\__,_|_|\\_|\\___|\\___/|___/ \n"
-        "       %s for ", sTitle.c_str());
+        "       %s for ", sTitle);
 
     switch (iCoreNumber)
     {
@@ -228,23 +228,14 @@ void ShowBanner(const std::string& sTitle, int iCoreNumber)
         printf("Unknown Version\n");
         break;
     }
-    printf("  ________________________________________________\n");
-
-}
-
-/**
-*  This function displays the standard mangos help banner to the console
-*/
-void ShowWebsiteBanner()
-{
     printf(
         "  ________________________________________________\n\n"
         "    For help and support please visit:            \n"
         "    Website / Forum / Wiki: https://getmangos.eu  \n"
-        "  ________________________________________________\n"
+        "  ________________________________________________\n\n"
         );
-}
 
+}
 
 /**
 *  This function returns the .map file 'magic' number based on the core number
@@ -325,7 +316,11 @@ void SetVMapMagicVersion(int iCoreNumber, char* magic)
 */
 void CreateDir(const std::string& sPath)
 {
-//    ACE_OS::mkdir(sPath.c_str());
+#ifdef WIN32
+    _mkdir(sPath.c_str());
+#else
+    mkdir(sPath.c_str(), 0755);
+#endif
 }
 
 /**
@@ -501,9 +496,9 @@ bool ShouldSkipMap(int mapID,bool m_skipContinents, bool m_skipJunkMaps, bool m_
 *
 *  @RETURN iCoreNumber the build number of the WoW executable, or -1 if failed
 */
-bool GetCoreAndBuildNumber(uint32& build, int8& core)
+bool GetCoreAndBuildNumber(std::string path, uint32& build, int8& core)
 {
-    build = _getBuildNumber();
+    build = _getBuildNumber(path);
     core = _getCoreNumberFromBuild(build);
     return (core != -1);
 }

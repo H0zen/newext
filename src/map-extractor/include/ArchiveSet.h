@@ -30,6 +30,7 @@
 #include "StormLib.h"
 #include <vector>
 #include <deque>
+#include <set>
 
 class ArchiveSet
 {
@@ -38,7 +39,7 @@ class ArchiveSet
         ~ArchiveSet();
         bool   Init(FileListFeeder& _feeder);
         uint8* ReadFile(char const* fileName, size_t& size);
-        //bool   ExtractFile(const char* archiveFile, const char* physicalFile);
+        bool GetFileList(char const*, std::set<std::string>&);
     private:
         std::deque<HANDLE> m_mpqList;
 };

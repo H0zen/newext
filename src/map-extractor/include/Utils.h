@@ -37,9 +37,8 @@
 #define CLIENT_WOD      5
 #define CLIENT_LEGION   6
 
-bool GetCoreAndBuildNumber(uint32& build, int8& core);
-void ShowBanner(const char* title, int iCoreNumber);
-void ShowWebsiteBanner();
+bool GetCoreAndBuildNumber(std::string path, uint32& build, int8& core);
+void ShowBanner(char const* title, int iCoreNumber);
 void SetMapMagicVersion(int iCoreNumber, char* magic);
 void SetVMapMagicVersion(int iCoreNumber, char* magic);
 void CreateDir(const char* path);
