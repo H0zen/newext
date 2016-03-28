@@ -33,7 +33,7 @@ set(EXECUTABLE_SOURCES
 
 if(WIN32)
     # add resource file to windows build
-    set(EXECUTABLE_SRCS ${EXECUTABLE_SRCS} ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor.rc)
+    set(EXECUTABLE_SOURCES ${EXECUTABLE_SOURCES} ${CMAKE_CURRENT_SOURCE_DIR}/map-extractor.rc)
 endif()
 
 
