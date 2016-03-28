@@ -143,7 +143,7 @@ void Extractor::ExtractDBC()
 {
     std::string out = outPath + "/dbc";
 
-    CreateDir(out);
+    CreateDir(out.c_str());
 
     std::set<std::string> dbcList;
 

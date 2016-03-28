@@ -27,6 +27,13 @@
 #include <vector>
 #include <cstdio>
 #include <sstream>
+
+#ifdef WIN32
+#  include <direct.h>
+#else
+#  include <sys/stat.h>
+#endif
+
 /**
 *  This function searches for and opens the WoW exe file in the current directory, using all known variations on its spelling
 *  @RETURN pFile the pointer to the file, so that it can be worked on
@@ -314,12 +321,12 @@ void SetVMapMagicVersion(int iCoreNumber, char* magic)
 *
 * @param sPath
 */
-void CreateDir(const std::string& sPath)
+void CreateDir(char const* sPath)
 {
 #ifdef WIN32
-    _mkdir(sPath.c_str());
+    _mkdir(sPath);
 #else
-    mkdir(sPath.c_str(), 0755);
+    mkdir(sPath, 0755);
 #endif
 }
 
