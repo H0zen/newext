@@ -22,8 +22,8 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#ifndef DBCFILE_H
-#define DBCFILE_H
+#ifndef __DB_FILE_H__
+#define __DB_FILE_H__
 
 #include "MPQStream.h"
 
@@ -36,7 +36,7 @@ class DBCFile
         explicit DBCFile(ArchiveSet&);
         virtual ~DBCFile();
 
-        bool open(const std::string& dbcFile);
+        virtual bool open(const std::string& dbcFile);
         bool write(const std::string& path);
 
         class Record
@@ -85,18 +85,40 @@ class DBCFile
         Record getRecord(uint32 id);
         uint32 getRecordCount() const { return recordCount;}
         uint32 getFieldCount() const { return fieldCount; }
-        uint32 getMaxId();
-    private:
-        void reset();
-    private:
+        virtual uint32 getMaxId();
+        virtual uint32 getMinId();
+    protected:
+        virtual void reset();
+    protected:
         MPQStream*   m_stream;
+        uint8 const  *stringTable;
+        uint8 const  *recordData;
+        std::string  m_name;
         uint32       recordSize;
         uint32       recordCount;
         uint32       fieldCount;
         uint32       stringSize;
-        uint8 const  *stringTable;
-        uint8 const  *recordData;
-        std::string  m_name;
+};
+
+
+class DB2File : public DBCFile
+{
+      public:
+          explicit DB2File(ArchiveSet& _as);
+          virtual ~DB2File();
+          virtual bool open(const std::string& db2File);
+          virtual uint32 getMaxId() { return maxId; }
+          virtual uint32 getMinId() { return minId; }
+      private:
+          virtual void reset();
+      private:
+          uint32    table_hash;
+          uint32    build;
+          uint32    timestamp;
+          uint32    minId;
+          uint32    maxId;
+          uint32    locale;
+          uint32    copyTableSize;
 };
 
 #endif

@@ -22,7 +22,7 @@
  * and lore are copyrighted by Blizzard Entertainment, Inc.
  */
 
-#include "DBCFile.h"
+#include "DBFile.h"
 
 DBCFile::DBCFile(ArchiveSet& _as): m_stream(NULL), recordSize(0), recordCount(0), fieldCount(0), stringSize(0), stringTable(NULL), recordData(NULL)
 {
@@ -149,4 +149,140 @@ uint32 DBCFile::getMaxId()
             { maxId = getRecord(i).getUInt32(0); }
     }
     return maxId;
+}
+uint32 DBCFile::getMinId()
+{
+    return 0; // not right
+}
+
+DB2File::DB2File(ArchiveSet& _as) : DBCFile(_as), table_hash(0), build(0), timestamp(0), minId(0), maxId(0), locale(0), copyTableSize(0)
+{
+}
+
+DB2File::~DB2File()
+{
+}
+
+void DB2File::reset()
+{
+    DBCFile::reset();
+    table_hash = 0;
+    build = 0;
+    timestamp = 0;
+    minId = 0;
+    maxId = 0;
+    locale = 0;
+    copyTableSize = 0;
+}
+
+bool DB2File::open(const std::string& db2File)
+{
+    reset();
+
+    if (!m_stream)
+        return false;
+
+    if (!m_stream->open(db2File.c_str()))
+        return false;
+
+    do
+    {
+        uint32 header = 0;
+        if (m_stream->read(&header, 4, 1) != 1) //header
+        {
+            printf("Could not read header in DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (header != '2BDW')
+        {
+            printf("The header in DB2File %s did not match.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&recordCount, 4, 1) != 1) // Number of records
+        {
+            printf("Could not read number of records from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&fieldCount, 4, 1) != 1)  // Number of fields
+        {
+            printf("Could not read number of fields from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&recordSize, 4, 1) != 1)  // Size of a record
+        {
+            printf("Could not read record size from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&stringSize, 4, 1) != 1)  // String size
+        {
+            printf("Could not read string block size from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&table_hash, 4, 1) != 1)  // Table hash
+        {
+            printf("Could not read tableHash from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&build, 4, 1) != 1)  // Build version
+        {
+            printf("Could not read build version from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&timestamp, 4, 1) != 1)  // TimeStamp
+        {
+            printf("Could not read timestamp from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&minId, 4, 1) != 1)  // minId
+        {
+            printf("Could not read minId from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&maxId, 4, 1) != 1)  // maxId
+        {
+            printf("Could not read maxId from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&locale, 4, 1) != 1)  // Locale
+        {
+            printf("Could not read locale from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if (m_stream->read(&copyTableSize, 4, 1) != 1)  // CopyTableSize
+        {
+            printf("Could not read copy_table_size from DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+
+        if ((recordSize*recordCount + stringSize + 48) != m_stream->getSize())
+        {
+            printf("Read error in DB2File %s.\n", db2File.c_str());
+            continue;
+        }
+        recordData = m_stream->getBuffer(true);
+        stringTable = recordData + recordSize * recordCount;
+    }
+    while(0);
+
+    if (recordData)
+    {
+        std::size_t pos = db2File.find_last_of("\\");
+
+        m_name = db2File.substr(pos + 1);
+
+        return true;
+    }
+    return false;
 }

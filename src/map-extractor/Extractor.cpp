@@ -1,6 +1,6 @@
 
 #include "Extractor.h"
-#include "DBCFile.h"
+#include "DBFile.h"
 
 
 Extractor::Extractor() : m_as(NULL), m_core(-1), m_build(0), m_type(0)
@@ -146,14 +146,16 @@ void Extractor::ExtractDBC()
     CreateDir(out.c_str());
 
     std::set<std::string> dbcList;
+    std::set<std::string> db2List;
 
     if (!m_as->GetFileList("*.dbc", dbcList))
         std::printf("Cannot get dbc listfile\n");
     if (m_core == CLIENT_CATA)
-        if (!m_as->GetFileList("*.db2", dbcList))
+        if (!m_as->GetFileList("*.db2", db2List))
         std::printf("Cannot get db2 listfile\n");
 
-    uint32 count = 0;
+    uint32 count_dbc = 0;
+    uint32 count_db2 = 0;
 
     DBCFile dbc(*m_as);
     for (std::set<std::string>::const_iterator it = dbcList.begin(); it != dbcList.end(); ++it)
@@ -162,8 +164,24 @@ void Extractor::ExtractDBC()
       {
           std::printf("Extracting: %s\n", it->c_str());
           dbc.write(out.c_str());
-          count++;
+          count_dbc++;
       }
     }
-    std::printf("Extracted %u dbc files\n\n", count);
+
+    DB2File db2(*m_as);
+    for (std::set<std::string>::const_iterator it = db2List.begin(); it != db2List.end(); ++it)
+    {
+      if (db2.open(it->c_str()))
+      {
+          std::printf("Extracting: %s\n", it->c_str());
+          db2.write(out.c_str());
+          count_db2++;
+      }
+    }
+
+    if (m_core == CLIENT_CATA)
+        std::printf("Extracted %u db2 files\n\n", count_db2);
+
+    std::printf("Extracted %u dbc files\n\n", count_dbc);
+
 }
