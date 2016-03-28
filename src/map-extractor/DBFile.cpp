@@ -98,7 +98,7 @@ bool DBCFile::open(const std::string& dbcFile)
             continue;
         }
 
-        if ((recordSize*recordCount + stringSize + 20) != m_stream->getSize())
+        if ((recordSize*recordCount + stringSize + 20) >=  m_stream->getSize())
         {
             printf("Read error in DBCFile %s.\n", dbcFile.c_str());
             continue;
@@ -266,7 +266,7 @@ bool DB2File::open(const std::string& db2File)
             continue;
         }
 
-        if ((recordSize*recordCount + stringSize + 48) != m_stream->getSize())
+        if ((recordSize*recordCount + stringSize + 48) >= m_stream->getSize())
         {
             printf("Read error in DB2File %s. RecSize is %lu, RecCount is %lu, StringSize is %lu, GetSize() is: %lu\n", db2File.c_str(), recordSize, recordCount, stringSize, m_stream->getSize());
             continue;
