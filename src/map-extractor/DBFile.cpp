@@ -268,9 +268,10 @@ bool DB2File::open(const std::string& db2File)
 
         if ((recordSize*recordCount + stringSize + 48) != m_stream->getSize())
         {
-            printf("Read error in DB2File %s.\n", db2File.c_str());
+            printf("Read error in DB2File %s. RecSize is %zu, RecCount is %zu, GetSize() is: %zu\n", db2File.c_str(), recordSize, recordCount, m_stream->getSize());
             continue;
         }
+
         recordData = m_stream->getBuffer(true);
         stringTable = recordData + recordSize * recordCount;
     }

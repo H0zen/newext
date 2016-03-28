@@ -94,17 +94,17 @@ class DBCFile
         uint8 const  *stringTable;
         uint8 const  *recordData;
         std::string  m_name;
-        uint32       recordSize;
-        uint32       recordCount;
-        uint32       fieldCount;
-        uint32       stringSize;
+        size_t       recordSize;
+        size_t       recordCount;
+        size_t       fieldCount;
+        size_t       stringSize;
 };
 
 
 class DB2File : public DBCFile
 {
       public:
-          explicit DB2File(ArchiveSet& _as);
+          DB2File(ArchiveSet& _as);
           virtual ~DB2File();
           virtual bool open(const std::string& db2File);
           virtual uint32 getMaxId() { return maxId; }
